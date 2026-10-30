@@ -65,6 +65,7 @@ export function Header() {
           </Link>
         ))}
       </nav>
+      <span className="nav-hint" aria-hidden="true">›</span>
     </header>
   )
 }

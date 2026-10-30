@@ -242,6 +242,15 @@ export function NoteSur20() {
   )
 }
 
+function romanParts(n) {
+  const parts = []
+  for (const [v, k] of [[1000, 1], [100, 1], [10, 1], [1, 1]]) {
+    const d = Math.floor(n / v) % 10
+    if (d) parts.push(`${c.toRoman(d * v)} = ${d * v}`)
+  }
+  return parts.join(' · ')
+}
+
 export function ChiffresRomains() {
   const [arabic, setArabic] = useState('2026')
   const [roman, setRoman] = useState('MCMXCIV')
@@ -254,7 +263,7 @@ export function ChiffresRomains() {
         <label className="field" htmlFor="r-a"><span>Nombre entier de 1 à 3 999</span>
           <input id="r-a" inputMode="numeric" value={arabic} onChange={(e) => setArabic(e.target.value)} aria-invalid={arabic && !r ? 'true' : undefined} />
         </label>
-        <Result label="En chiffres romains" value={r || NA} detail={r ? '' : 'Saisissez un entier entre 1 et 3 999.'} />
+        <Result label="En chiffres romains" value={r || NA} detail={r ? romanParts(Math.round(n)) : 'Saisissez un entier entre 1 et 3 999.'} />
       </Block>
       <Block title="Chiffres romains → nombre">
         <label className="field" htmlFor="r-r"><span>Chiffres romains (I, V, X, L, C, D, M)</span>

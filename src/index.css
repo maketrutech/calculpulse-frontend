@@ -566,3 +566,13 @@ main.wrap > h1:first-child, main.wrap > :first-child > h1:first-child { margin-t
   .nav-row { gap: 0; -webkit-mask-image: none; mask-image: none; padding-right: 0; justify-content: space-between; }
   .nav-link { padding: 0 0.5rem; font-size: 0.92rem; }
 }
+@media (max-width: 599px) {
+  .calc-row.three { grid-template-columns: 1fr 1fr; }
+  .calc-row.three > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+.site-header { position: relative; }
+.nav-hint { display: none; }
+@media (max-width: 739px) {
+  .nav-row { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 4.5rem), transparent calc(100% - 1.6rem)); mask-image: linear-gradient(90deg, #000 calc(100% - 4.5rem), transparent calc(100% - 1.6rem)); padding-right: 2.5rem; }
+  .nav-hint { display: flex; align-items: center; justify-content: center; position: absolute; right: 0.6rem; bottom: 0.4rem; width: 1.6rem; height: 3rem; pointer-events: none; font-size: 1.7rem; line-height: 1; color: var(--accent); font-weight: 600; }
+}

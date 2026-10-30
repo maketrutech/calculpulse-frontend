@@ -19,6 +19,7 @@ const autres = [
   { href: 'https://docslice.maketru.com/', label: 'Fusionner des PDF' },
   { href: 'https://facturepulse.maketru.com/', label: 'Comparateur facturation électronique' },
   { href: 'https://chronopulse.maketru.com/', label: 'Minuteur et chronomètre en ligne' },
+  { href: 'https://outilspulse.maketru.com/', label: 'Outils en ligne' },
 ]
 
 function Column({ title, children }) {
