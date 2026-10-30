@@ -11,7 +11,7 @@ const vars = {
   url: site.url,
   publisher: site.publisher,
   director: site.director,
-  email: site.email,
+  email: `[[mailto:${site.email}|${site.email}]]`,
   address: site.address,
   legalForm: site.legalForm,
   updated: site.legalUpdated,
