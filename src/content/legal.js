@@ -72,10 +72,11 @@ export const legalPages = {
         ],
       },
       {
-        h2: 'Cookies, consentement et publicité',
+        h2: 'Cookies, consentement, mesure d’audience et publicité',
         paragraphs: [
           'Au premier affichage, la publicité et la mesure d’audience sont refusées. Un bandeau permet d’accepter, de refuser, ou de choisir. Refuser se fait en un clic, au même niveau que accepter. Le choix est gardé dans clp-consent. Google Consent Mode est initialisé en « denied » avant toute demande publicitaire. Aucune annonce n’est chargée tant que vous n’avez pas accepté la publicité et tant que l’éditeur n’a pas renseigné ses identifiants AdSense.',
           'Si vous acceptez, Google Ireland Limited peut déposer des cookies ou identifiants pour diffuser et mesurer des annonces (AdSense). Google agit alors selon ses propres règles : https://policies.google.com/privacy et https://policies.google.com/technologies/ads. La base légale de cette publicité est votre consentement (article 6.1.a du RGPD et article 82 de la loi Informatique et Libertés). Vous pouvez retirer ce consentement à tout moment via « Gérer les cookies ». Le retrait vaut pour la suite et ne rend pas illicite la période précédente.',
+          'Mesure d’audience : le site utilise Google Analytics 4 (Google Ireland Limited) pour compter les visites et les pages vues. Tant que vous n’avez pas accepté la mesure d’audience, Google Consent Mode v2 garde analytics_storage à « denied » : aucun cookie Google Analytics n’est déposé et seuls des signaux sans cookie ni identifiant persistant sont envoyés. Si vous acceptez, des cookies _ga peuvent être déposés (13 mois au plus) et les adresses IP ne sont pas conservées par Google Analytics. Règles de Google : https://policies.google.com/privacy et https://policies.google.com/technologies/partner-sites. Base légale : votre consentement, retirable à tout moment via « Gérer les cookies ».',
         ],
       },
       {
@@ -115,7 +116,7 @@ export const legalPages = {
       {
         h2: 'Trois familles',
         paragraphs: [
-          'Nécessaires : mémoriser votre décision et, séparément, le thème clair ou sombre (clp-theme). Ils ne partent pas vers un régie publicitaire. Publicité : uniquement si vous l’acceptez, Google AdSense peut déposer des cookies pour afficher et limiter la répétition des annonces. Mesure d’audience : uniquement si vous l’acceptez. Aucun outil de statistique n’est chargé tant que ce choix n’est pas oui. Le détail des traitements figure dans la [[/politique-de-confidentialite|politique de confidentialité]].',
+          'Nécessaires : mémoriser votre décision et, séparément, le thème clair ou sombre (clp-theme). Ils ne partent pas vers un régie publicitaire. Publicité : uniquement si vous l’acceptez, Google AdSense peut déposer des cookies pour afficher et limiter la répétition des annonces. Mesure d’audience : uniquement si vous l’acceptez. Google Analytics 4 est chargé en mode Consent Mode : sans votre accord, analytics_storage reste « denied », aucun cookie de mesure n’est déposé et seuls des signaux anonymes sans cookie sont envoyés ; avec votre accord, Google Analytics peut déposer des cookies _ga. Le détail des traitements figure dans la [[/politique-de-confidentialite|politique de confidentialité]].',
         ],
       },
       {

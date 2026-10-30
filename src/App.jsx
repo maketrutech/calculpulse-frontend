@@ -7,6 +7,7 @@ import { ConsentProvider } from './context/Consent.jsx'
 import { routes } from './data/routes.js'
 import { getCached, setCached } from './lib/routeCache.js'
 import { NotFound } from './pages/NotFound.jsx'
+import { PageViews } from './lib/analytics.js'
 
 function ScrollTop() {
   const { pathname } = useLocation()
@@ -43,6 +44,7 @@ export function App() {
       <ErrorBoundary>
         <Layout>
           <ScrollTop />
+          <PageViews />
           <Routes>
             {routes.map((route) => (
               <Route key={route.path} path={route.path} element={<Routed path={route.path} load={route.load} />} />
