@@ -61,7 +61,7 @@ export function Header() {
             onMouseEnter={() => preloadRoute(tool.path)}
             onFocus={() => preloadRoute(tool.path)}
           >
-            {tool.name}
+            {tool.short}
           </Link>
         ))}
       </nav>

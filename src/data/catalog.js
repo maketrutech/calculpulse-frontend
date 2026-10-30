@@ -3,10 +3,10 @@ export const tools = [
   { id: 'calcul-augmentation', path: '/calcul-augmentation', name: 'Augmentation et baisse', group: 'Pourcentages', blurb: 'Ajouter ou retirer un pourcentage, retrouver le prix initial.' },
   { id: 'taux-d-evolution', path: '/taux-d-evolution', name: 'Taux d’évolution', group: 'Pourcentages', blurb: 'Variation en %, coefficient multiplicateur, taux réciproque.' },
   { id: 'calcul-remise', path: '/calcul-remise', name: 'Calcul de remise', group: 'Pourcentages', blurb: 'Prix soldé, remises successives, montant économisé.' },
-  { id: 'calcul-tva', path: '/calcul-tva', name: 'Calcul TVA HT ↔ TTC', group: 'Commerce et TVA', featured: true, blurb: 'HT, TTC et montant de TVA aux taux 20 %, 10 %, 5,5 % et 2,1 %.' },
-  { id: 'calcul-tva-20', path: '/calcul-tva-20', name: 'TVA à 20 %', group: 'Commerce et TVA', blurb: 'Le taux normal : multiplier par 1,2 ou diviser par 1,2.' },
-  { id: 'calcul-tva-10', path: '/calcul-tva-10', name: 'TVA à 10 %', group: 'Commerce et TVA', blurb: 'Restauration, travaux de rénovation, transports.' },
-  { id: 'calcul-tva-5-5', path: '/calcul-tva-5-5', name: 'TVA à 5,5 %', group: 'Commerce et TVA', blurb: 'Alimentation, énergie, travaux d’économie d’énergie.' },
+  { id: 'calcul-tva', path: '/calcul-tva', name: 'Calcul TVA HT ↔ TTC', group: 'Commerce et TVA', featured: true, blurb: 'HT, TTC et montant de TVA aux taux 20 %, 10 %, 5,5 % et 2,1 %.' },
+  { id: 'calcul-tva-20', path: '/calcul-tva-20', name: 'TVA à 20 %', group: 'Commerce et TVA', blurb: 'Le taux normal : multiplier par 1,2 ou diviser par 1,2.' },
+  { id: 'calcul-tva-10', path: '/calcul-tva-10', name: 'TVA à 10 %', group: 'Commerce et TVA', blurb: 'Restauration, travaux de rénovation, transports.' },
+  { id: 'calcul-tva-5-5', path: '/calcul-tva-5-5', name: 'TVA à 5,5 %', group: 'Commerce et TVA', blurb: 'Alimentation, énergie, travaux d’économie d’énergie.' },
   { id: 'calcul-marge', path: '/calcul-marge', name: 'Taux de marge et de marque', group: 'Commerce et TVA', blurb: 'Marge, coefficient et prix de vente depuis le coût d’achat.' },
   { id: 'produit-en-croix', path: '/produit-en-croix', name: 'Produit en croix', group: 'École et maths', featured: true, blurb: 'Règle de trois : la quatrième valeur d’une proportion.' },
   { id: 'calcul-moyenne', path: '/calcul-moyenne', name: 'Calcul de moyenne', group: 'École et maths', featured: true, blurb: 'Moyenne, médiane, minimum et maximum d’une liste.' },
@@ -27,4 +27,5 @@ export const toolMap = Object.fromEntries(tools.map((t) => [t.id, t]))
 export const groups = [...new Set(tools.map((t) => t.group))]
 
 const navIds = ['calcul-pourcentage', 'calcul-tva', 'produit-en-croix', 'calcul-moyenne', 'calcul-imc', 'chiffres-romains', 'calcul-marge', 'convertir']
-export const navTools = navIds.map((id) => toolMap[id])
+const navShort = { 'calcul-pourcentage': 'Pourcentage', 'calcul-tva': 'TVA', 'produit-en-croix': 'Produit en croix', 'calcul-moyenne': 'Moyenne', 'calcul-imc': 'IMC', 'chiffres-romains': 'Chiffres romains', 'calcul-marge': 'Marge', convertir: 'Conversions' }
+export const navTools = navIds.map((id) => ({ ...toolMap[id], short: navShort[id] || toolMap[id].name }))

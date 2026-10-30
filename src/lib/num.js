@@ -1,4 +1,4 @@
-// Saisie et affichage des nombres au format français, sans Intl pour un rendu identique serveur/navigateur.
+// Saisie et affichage des nombres au format français, via Intl.NumberFormat('fr-FR').
 const NBSP = '\u00a0'
 
 export function parseNum(input) {
@@ -33,14 +33,18 @@ function group(intPart) {
   return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, NBSP)
 }
 
+const nfCache = new Map()
+function nf(min, max) {
+  const k = min + ':' + max
+  if (!nfCache.has(k)) nfCache.set(k, new Intl.NumberFormat('fr-FR', { minimumFractionDigits: min, maximumFractionDigits: max }))
+  return nfCache.get(k)
+}
+
 export function fmt(n, digits = 2, { fixed = false } = {}) {
   if (n === null || n === undefined || !Number.isFinite(n)) return '—'
   if (Math.abs(n) >= 1e15) return n.toExponential(4).replace('.', ',').replace('e+', ' × 10^')
   const r = roundTo(n, digits)
-  let [i, d = ''] = Math.abs(r).toFixed(digits).split('.')
-  if (!fixed) d = d.replace(/0+$/, '')
-  const sign = r < 0 ? '−' : ''
-  return `${sign}${group(i)}${d ? `,${d}` : ''}`
+  return nf(fixed ? digits : 0, digits).format(r).replace(/[\u202f\u00a0]/g, NBSP).replace('-', '−')
 }
 
 export function money(n) {
