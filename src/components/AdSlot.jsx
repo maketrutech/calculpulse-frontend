@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react'
 import { useConsent } from '../context/Consent.jsx'
+import { ADSENSE_CLIENT, loadAdsense } from '../lib/adsense.js'
 
+// Responsive AdSense unit (same pattern as SolarPulse's AdBanner). Space is reserved
+// with a fixed height (.ad-reserve) once ads are accepted, so there is no layout shift.
+// Placed after the tool, never above it.
 export function AdSlot({ placement = 'content' }) {
-  const client = import.meta.env.VITE_ADSENSE_CLIENT
   const slot = placement === 'bottom'
     ? import.meta.env.VITE_ADSENSE_SLOT_BOTTOM
     : import.meta.env.VITE_ADSENSE_SLOT
@@ -10,39 +13,29 @@ export function AdSlot({ placement = 'content' }) {
   const pushed = useRef(false)
 
   useEffect(() => {
-    if (!client || !slot || !ads) return undefined
+    if (!ADSENSE_CLIENT || !ads || pushed.current) return
     document.documentElement.dataset.ads = '1'
-    if (!document.querySelector('script[data-cp-adsense]')) {
-      const script = document.createElement('script')
-      script.async = true
-      script.dataset.cpAdsense = '1'
-      script.crossOrigin = 'anonymous'
-      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}`
-      document.head.appendChild(script)
-    }
-    if (pushed.current) return undefined
+    loadAdsense()
     try {
-      window.adsbygoogle = window.adsbygoogle || []
-      window.adsbygoogle.push({})
+      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
       pushed.current = true
     } catch {
-      /* AdSense not ready */
+      /* ad blocker or script unavailable */
     }
-    return undefined
-  }, [ads, client, slot])
+  }, [ads])
 
-  if (!client || !slot) return null
+  if (!ADSENSE_CLIENT) return null
   return (
     <aside className="ad-reserve" aria-label="Publicité" data-placement={placement}>
       <p className="ad-label">Publicité</p>
       {ads ? (
         <ins
           className="adsbygoogle"
-          style={{ display: 'block', height: '240px' }}
-          data-ad-client={client}
-          data-ad-slot={slot}
-          data-ad-format="rectangle"
-          data-full-width-responsive="false"
+          style={{ display: 'block', width: '100%', height: '240px' }}
+          data-ad-client={ADSENSE_CLIENT}
+          data-ad-slot={slot || undefined}
+          data-ad-format="auto"
+          data-full-width-responsive="true"
         />
       ) : null}
     </aside>

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { KEYS, STORAGE_KEYS } from '../lib/keys.js'
+import { loadAdsense } from '../lib/adsense.js'
 import { readJSON, removeKey, writeJSON } from '../lib/storage.js'
 
 const ConsentContext = createContext(null)
@@ -12,7 +13,10 @@ function applyGtag(choice) {
     ad_personalization: choice.ads ? 'granted' : 'denied',
     analytics_storage: choice.analytics ? 'granted' : 'denied',
   })
-  if (choice.ads) document.documentElement.dataset.ads = '1'
+  if (choice.ads) {
+    document.documentElement.dataset.ads = '1'
+    loadAdsense()
+  }
   else delete document.documentElement.dataset.ads
 }
 
