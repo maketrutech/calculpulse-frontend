@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 
-export function Breadcrumbs({ items }) {
+export function Breadcrumbs({ items, label = 'Fil d’Ariane' }) {
   if (!items || items.length < 2) return null
   return (
-    <nav className="crumbs" aria-label="Fil d’Ariane">
+    <nav className="crumbs" aria-label={label}>
       <ol>
         {items.map((item, index) => {
           const last = index === items.length - 1

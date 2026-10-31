@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { navTools } from '../data/catalog.js'
+import { enNav, isEnglishPath, switchTarget } from '../data/enMap.js'
 import { preloadRoute } from '../data/routes.js'
 import { normalizePath } from '../lib/path.js'
 import { KEYS } from '../lib/keys.js'
@@ -15,13 +16,16 @@ function Mark() {
 }
 
 function active(path, current) {
-  if (path === '/') return current === '/'
+  if (path === '/' || path === '/en') return current === path
   return current === path || current.startsWith(`${path}/`)
 }
 
 export function Header() {
   const { pathname } = useLocation()
   const current = normalizePath(pathname)
+  const en = isEnglishPath(current)
+  const home = en ? '/en' : '/'
+  const items = en ? enNav : navTools
   const toggleTheme = () => {
     const next = !document.documentElement.classList.contains('dark')
     document.documentElement.classList.toggle('dark', next)
@@ -33,15 +37,16 @@ export function Header() {
   }
   return (
     <header className="site-header">
+      <a className="lang-switch" href={switchTarget(current)} hrefLang={en ? 'fr' : 'en'} lang={en ? 'fr' : 'en'} aria-label={en ? 'Version française' : 'English version'}>{en ? 'FR' : 'EN'}</a>
       <div className="header-row">
-        <Link to="/" className="brand" onMouseEnter={() => preloadRoute('/')} onFocus={() => preloadRoute('/')}>
+        <Link to={home} className="brand" onMouseEnter={() => preloadRoute(home)} onFocus={() => preloadRoute(home)}>
           <Mark />
           <span>
             <span className="brand-calcul">Calcul</span>
             <span className="brand-pulse">pulse</span>
           </span>
         </Link>
-        <button type="button" className="icon-btn" aria-label="Changer le thème" onClick={toggleTheme}>
+        <button type="button" className="icon-btn" aria-label={en ? 'Switch color theme' : 'Changer le thème'} onClick={toggleTheme}>
           <svg className="icon-moon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
             <path fill="currentColor" d="M14.5 2.5a8.5 8.5 0 1 0 7 12.2A8 8 0 0 1 14.5 2.5z" />
           </svg>
@@ -51,10 +56,10 @@ export function Header() {
           </svg>
         </button>
       </div>
-      <nav className="nav-row" aria-label="Outils">
-        {navTools.map((tool) => (
+      <nav className="nav-row" aria-label={en ? 'Tools' : 'Outils'}>
+        {items.map((tool) => (
           <Link
-            key={tool.id}
+            key={tool.path}
             to={tool.path}
             className={active(tool.path, current) ? 'nav-link is-active' : 'nav-link'}
             aria-current={active(tool.path, current) ? 'page' : undefined}

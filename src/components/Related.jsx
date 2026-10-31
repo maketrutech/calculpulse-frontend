@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom'
 import { toolMap } from '../data/catalog.js'
 import { preloadRoute } from '../data/routes.js'
 
-export function Related({ ids, items: given }) {
+export function Related({ ids, items: given, title = 'Outils associés' }) {
   const items = given || (ids || []).map((id) => toolMap[id]).filter(Boolean)
   if (!items.length) return null
   return (
     <section aria-labelledby="related-title">
-      <h2 id="related-title">Outils associés</h2>
+      <h2 id="related-title">{title}</h2>
       <ul className="related-grid">
         {items.map((tool) => (
           <li key={tool.path}>

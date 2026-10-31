@@ -5,6 +5,7 @@ import { ErrorBoundary } from './components/ErrorBoundary.jsx'
 import { Layout } from './components/Layout.jsx'
 import { ConsentProvider } from './context/Consent.jsx'
 import { routes } from './data/routes.js'
+import { enRoutes } from './data/enRoutes.js'
 import { getCached, setCached } from './lib/routeCache.js'
 import { NotFound } from './pages/NotFound.jsx'
 import { PageViews } from './lib/analytics.js'
@@ -34,7 +35,7 @@ function Routed({ path, load }) {
       live = false
     }
   }, [path, load])
-  if (!Comp) return <p className="page-loading" role="status">Chargement de l’outil…</p>
+  if (!Comp) return <p className="page-loading" role="status">{path.startsWith('/en') ? 'Loading the tool…' : 'Chargement de l’outil…'}</p>
   return <Comp />
 }
 
@@ -46,7 +47,7 @@ export function App() {
           <ScrollTop />
           <PageViews />
           <Routes>
-            {routes.map((route) => (
+            {[...routes, ...enRoutes].map((route) => (
               <Route key={route.path} path={route.path} element={<Routed path={route.path} load={route.load} />} />
             ))}
             <Route path="*" element={<NotFound />} />

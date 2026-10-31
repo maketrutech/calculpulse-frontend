@@ -19,6 +19,11 @@ export function ToolPage({
   relatedItems,
   vars,
   children,
+  locale,
+  faqTitle,
+  relatedTitle,
+  crumbLabel,
+  adLabel,
 }) {
   return (
     <>
@@ -29,18 +34,19 @@ export function ToolPage({
         crumbs={crumbs}
         faqs={faqs}
         app={{ name: appName || h1, description }}
+        locale={locale}
       />
-      <Breadcrumbs items={crumbs} />
+      <Breadcrumbs items={crumbs} label={crumbLabel} />
       <h1>{h1}</h1>
       <p className="lede">{lede}</p>
       <section className="tool-stage" aria-label={h1}>
         {children}
       </section>
       <Article sections={sections} vars={vars} />
-      <AdSlot placement="content" />
-      <Faq items={faqs} vars={vars} />
-      <AdSlot placement="bottom" />
-      <Related ids={related} items={relatedItems} />
+      <AdSlot placement="content" label={adLabel} />
+      <Faq items={faqs} vars={vars} title={faqTitle} />
+      <AdSlot placement="bottom" label={adLabel} />
+      <Related ids={related} items={relatedItems} title={relatedTitle} />
     </>
   )
 }

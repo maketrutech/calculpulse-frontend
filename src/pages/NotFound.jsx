@@ -1,8 +1,13 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Seo } from '../components/Seo.jsx'
 import { tools } from '../data/catalog.js'
+import { isEnglishPath } from '../data/enMap.js'
+import { normalizePath } from '../lib/path.js'
+import { EnglishNotFound } from './en/NotFound.jsx'
 
 export function NotFound() {
+  const { pathname } = useLocation()
+  if (isEnglishPath(normalizePath(pathname))) return <EnglishNotFound />
   return (
     <>
       <Seo

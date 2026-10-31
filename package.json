@@ -8,7 +8,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "export CP_BUILD_DATE=${CP_BUILD_DATE:-$(TZ=Europe/Paris date +%F)} && vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs",
+    "build": "export CP_BUILD_DATE=${CP_BUILD_DATE:-$(TZ=Europe/Paris date +%F)} && vite build && vite build --ssr src/entry-server.jsx --outDir dist-ssr && node scripts/prerender.mjs && node scripts/check-fr-unchanged.mjs",
+    "check:fr": "node scripts/check-fr-unchanged.mjs",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
     "test": "node --test src/lib/*.test.js",
     "serve:lh": "node scripts/serve.mjs",
