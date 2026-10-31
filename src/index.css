@@ -571,6 +571,26 @@ main.wrap > h1:first-child, main.wrap > :first-child > h1:first-child { margin-t
   .calc-row.three > :last-child:nth-child(odd) { grid-column: 1 / -1; }
 }
 .site-header { position: relative; }
+.lang-switch {
+  position: absolute;
+  z-index: 2;
+  top: 0.5rem;
+  right: calc(max(1rem, 50% - 540px) + 3.15rem);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3rem;
+  min-height: 3rem;
+  padding: 0 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+.lang-switch:hover { border-color: var(--ink); }
 .nav-hint { display: none; }
 @media (max-width: 739px) {
   .nav-row { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 4.5rem), transparent calc(100% - 1.6rem)); mask-image: linear-gradient(90deg, #000 calc(100% - 4.5rem), transparent calc(100% - 1.6rem)); padding-right: 2.5rem; }

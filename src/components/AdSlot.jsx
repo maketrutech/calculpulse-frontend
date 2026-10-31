@@ -5,7 +5,7 @@ import { ADSENSE_CLIENT, loadAdsense } from '../lib/adsense.js'
 // Responsive AdSense unit (same pattern as SolarPulse's AdBanner). Space is reserved
 // with a fixed height (.ad-reserve) once ads are accepted, so there is no layout shift.
 // Placed after the tool, never above it.
-export function AdSlot({ placement = 'content' }) {
+export function AdSlot({ placement = 'content', label = 'Publicité' }) {
   const slot = placement === 'bottom'
     ? import.meta.env.VITE_ADSENSE_SLOT_BOTTOM
     : import.meta.env.VITE_ADSENSE_SLOT
@@ -26,8 +26,8 @@ export function AdSlot({ placement = 'content' }) {
 
   if (!ADSENSE_CLIENT) return null
   return (
-    <aside className="ad-reserve" aria-label="Publicité" data-placement={placement}>
-      <p className="ad-label">Publicité</p>
+    <aside className="ad-reserve" aria-label={label} data-placement={placement}>
+      <p className="ad-label">{label}</p>
       {ads ? (
         <ins
           className="adsbygoogle"

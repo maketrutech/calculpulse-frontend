@@ -58,7 +58,12 @@ export function matchRoute(pathname) {
 }
 
 export async function preloadRoute(pathname) {
-  const item = matchRoute(pathname)
+  const path = normalizePath(pathname)
+  let item = matchRoute(path)
+  if (!item && (path === '/en' || path.startsWith('/en/'))) {
+    const { enRoutes } = await import('./enRoutes.js')
+    item = enRoutes.find((route) => route.path === path) || null
+  }
   if (!item) return null
   const cached = getCached(item.path)
   if (cached) return cached

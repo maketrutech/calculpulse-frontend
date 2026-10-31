@@ -3,8 +3,10 @@ import { HelmetProvider } from 'react-helmet-async'
 import { StaticRouter } from 'react-router-dom/server'
 import { App } from './App.jsx'
 import { preloadRoute, routes } from './data/routes.js'
+import { enRoutes } from './data/enRoutes.js'
 import { normalizePath } from './lib/path.js'
 
+export const allRoutes = [...routes, ...enRoutes]
 export { routes }
 
 export async function render(url) {

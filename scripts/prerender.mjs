@@ -5,8 +5,13 @@ import { pathToFileURL } from 'node:url'
 const root = process.cwd()
 const dist = path.join(root, 'dist')
 const template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8')
+if (!template.includes('<!--app-html-->') || !template.includes('<!--app-head-->')) {
+  console.error('dist/index.html has already been prerendered. Run vite build before prerender.')
+  process.exit(1)
+}
 const manifest = JSON.parse(fs.readFileSync(path.join(dist, '.vite', 'manifest.json'), 'utf8'))
 const server = await import(pathToFileURL(path.join(root, 'dist-ssr', 'entry-server.js')).href)
+const { pairFor } = await import(pathToFileURL(path.join(root, 'src', 'data', 'enMap.js')).href)
 const site = JSON.parse(fs.readFileSync(path.join(root, 'src', 'data', 'site.json'), 'utf8'))
 
 function collectAssets(id, seen = new Set()) {
@@ -73,37 +78,85 @@ function writeHtml(routePath, html) {
   fs.writeFileSync(file, html)
 }
 
+function localizeShell(html, routePath) {
+  // react-helmet-async prints the React prop name hrefLang. The HTML attribute is hreflang.
+  let out = html.replaceAll('hrefLang=', 'hreflang=')
+  if (!routePath.startsWith('/en')) return out
+  return out
+    .replace('<html lang="fr">', '<html lang="en">')
+    .replace('>Aller au contenu<', '>Skip to content<')
+    .replace(
+      'Les outils ont besoin de JavaScript pour défiler. Le texte de la page reste lisible sans script.',
+      'These tools need JavaScript to run. The text on the page stays readable without it.',
+    )
+}
+
+function pageLoc(routePath) {
+  return routePath === '/' ? `${site.url}/` : `${site.url}${routePath}`
+}
+
 const failures = []
 const urls = []
 
-for (const route of server.routes) {
+for (const route of server.allRoutes) {
   const rendered = await server.render(route.path)
-  const page = template
+  const page = localizeShell(template
     .replace('<!--app-head-->', `${rendered.head}\n${preloadFor(route)}`)
-    .replace('<!--app-html-->', rendered.html)
+    .replace('<!--app-html-->', rendered.html), route.path)
   if (!page.includes('<h1')) failures.push(`${route.path} sans h1`)
   if (!page.includes('rel="canonical"') && !page.includes("rel='canonical'")) failures.push(`${route.path} sans canonique`)
   if (!page.includes('name="description"')) failures.push(`${route.path} sans description`)
   if ((route.kind === 'tool' || route.kind === 'home') && wordCount(page) < 280) {
     failures.push(`${route.path} article court (${wordCount(page)} mots)`)
   }
+  const head = page.split('</head>')[0]
+  const pair = pairFor(route.path)
+  if (pair) {
+    for (const lang of ['fr', 'en', 'x-default']) {
+      if (!head.includes(`hreflang="${lang}"`)) failures.push(`${route.path} sans hreflang ${lang}`)
+    }
+    if (!head.includes(`href="${pageLoc(pair.fr)}"`) || !head.includes(`href="${pageLoc(pair.en)}"`)) {
+      failures.push(`${route.path} hreflang href incorrect`)
+    }
+  } else if (/<link\b[^>]*hreflang=/.test(head)) {
+    failures.push(`${route.path} hreflang sans paire`)
+  }
+  if (route.path.startsWith('/en') && !page.includes('<html lang="en">')) failures.push(`${route.path} lang`)
   writeHtml(route.path, page)
   urls.push(route.path)
 }
 
 const notFound = await server.render('/page-inexistante-calculpulse')
-const notFoundHtml = template
+const notFoundHtml = localizeShell(template
   .replace('<!--app-head-->', notFound.head)
-  .replace('<!--app-html-->', notFound.html)
+  .replace('<!--app-html-->', notFound.html), '/page-inexistante-calculpulse')
 fs.writeFileSync(path.join(dist, '404.html'), notFoundHtml)
 
+const enMissing = await server.render('/en/page-inexistante-calculpulse')
+const enNotFoundHtml = localizeShell(template
+  .replace('<!--app-head-->', enMissing.head)
+  .replace('<!--app-html-->', enMissing.html), '/en/page-inexistante-calculpulse')
+fs.mkdirSync(path.join(dist, 'en'), { recursive: true })
+fs.writeFileSync(path.join(dist, 'en', '404.html'), enNotFoundHtml)
+
 const today = new Date().toISOString().slice(0, 10)
+function priorityFor(routePath) {
+  if (routePath === '/') return '1.0'
+  if (routePath === '/en') return '0.9'
+  return routePath.split('/').length > 2 ? '0.6' : '0.8'
+}
+function alternates(routePath) {
+  const pair = pairFor(routePath)
+  if (!pair) return ''
+  const fr = pageLoc(pair.fr)
+  const en = pageLoc(pair.en)
+  return `<xhtml:link rel="alternate" hreflang="fr" href="${fr}"/><xhtml:link rel="alternate" hreflang="en" href="${en}"/><xhtml:link rel="alternate" hreflang="x-default" href="${fr}"/>`
+}
 const body = urls.map((routePath) => {
-  const loc = routePath === '/' ? `${site.url}/` : `${site.url}${routePath}`
-  const priority = routePath === '/' ? '1.0' : routePath.split('/').length > 2 ? '0.6' : '0.8'
-  return `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>`
+  const loc = pageLoc(routePath)
+  return `  <url><loc>${loc}</loc>${alternates(routePath)}<lastmod>${today}</lastmod><changefreq>monthly</changefreq><priority>${priorityFor(routePath)}</priority></url>`
 }).join('\n')
-fs.writeFileSync(path.join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`)
+fs.writeFileSync(path.join(dist, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${body}\n</urlset>\n`)
 
 if (failures.length) {
   console.error(failures.join('\n'))
