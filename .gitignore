@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-ssr
+.firebase
+.env
+.env.local
+.env.*.local
+*.log
+.lighthouseci
+lighthouse-*.json
+.DS_Store
+__pycache__
+.python-version

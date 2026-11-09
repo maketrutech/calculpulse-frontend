@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f1f2f7" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        wait_for_update: 500
+      });
+      gtag('set', 'ads_data_redaction', true);
+      gtag('set', 'url_passthrough', true);
+      try {
+        var theme = localStorage.getItem('clp-theme');
+        var dark = theme ? theme === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.classList.toggle('dark', dark);
+        var raw = localStorage.getItem('clp-consent');
+        if (raw) {
+          var choice = JSON.parse(raw);
+          if (choice && typeof choice === 'object') {
+            if (choice.ads) document.documentElement.dataset.ads = '1';
+            gtag('consent', 'update', {
+              ad_storage: choice.ads ? 'granted' : 'denied',
+              ad_user_data: choice.ads ? 'granted' : 'denied',
+              ad_personalization: choice.ads ? 'granted' : 'denied',
+              analytics_storage: choice.analytics ? 'granted' : 'denied'
+            });
+          }
+        }
+      } catch (e) {}
+    </script>
+    <!--app-head-->
+  </head>
+  <body>
+    <a class="skip" href="#contenu">Aller au contenu</a>
+    <div id="root"><!--app-html--></div>
+    <noscript>
+      <p class="noscript">Les outils ont besoin de JavaScript pour défiler. Le texte de la page reste lisible sans script.</p>
+    </noscript>
+    <script type="module" src="/src/entry-client.jsx"></script>
+  </body>
+</html>
