@@ -1,6 +1,32 @@
 // Paires de conversion. `uses` et `tip` donnent un contenu propre à chaque page.
 export const pairs = [
-  { slug: 'pouce-en-cm', from: 'pouce', to: 'cm', name: 'Pouce en cm', values: [1, 2, 3, 5, 10, 12, 13.3, 14, 15.6, 17, 19, 21, 24, 27, 32, 40, 43, 50, 55, 65, 75, 85], uses: 'On convertit des pouces en centimètres surtout pour les écrans (smartphone, ordinateur portable, moniteur, téléviseur), où la taille annoncée est la diagonale. Les jantes de vélo et de voiture, les valises cabine et les tuyaux de plomberie sont aussi cotés en pouces.', tip: 'Pour un calcul de tête, multipliez par 2,5 puis ajoutez 2 % : 40 pouces ≈ 100 + 2 = 102 cm (valeur exacte 101,6 cm).', faq: [{ q: 'Un pouce fait-il 2,5 cm ou 2,54 cm ?', a: 'Exactement 2,54 cm. Arrondir à 2,5 cm fait perdre 1,6 % : sur une télévision de 65 pouces, l’écart dépasse 2,5 cm.' }, { q: 'Comment mesurer un écran en pouces ?', a: 'Mesurez la diagonale de la dalle visible, d’un coin au coin opposé, sans le cadre, puis divisez les centimètres par 2,54.' }] },
+  {
+    slug: 'pouce-en-cm',
+    from: 'pouce',
+    to: 'cm',
+    name: 'Pouce en cm',
+    title: 'Pouce en cm : convertisseur pouce cm (1 po = 2,54 cm)',
+    description: 'Convertisseur pouce cm : 1 pouce = 2,54 cm exactement. Tableau des tailles d’écran (la cote est la diagonale), des jantes et des roues, formule et exemples.',
+    h1: 'Pouce en cm : convertisseur pouce → cm',
+    lede: '1 pouce = 2,54 cm exactement. Saisissez des pouces ou des centimètres : le convertisseur pouce cm travaille dans les deux sens.',
+    values: [1, 2, 3, 5, 10, 12, 13.3, 14, 15.6, 17, 19, 21, 24, 27, 32, 40, 43, 50, 55, 65, 75, 85],
+    presets: [
+      { value: 1, label: '1 po' },
+      { value: 15.6, label: '15,6 po' },
+      { value: 27, label: '27 po' },
+      { value: 55, label: '55 po' },
+      { value: 17, label: '17 po' },
+    ],
+    uses: 'Le convertisseur pouce cm sert dès qu’une cote en pouces doit devenir des centimètres : écran, jante, roue de vélo, valise cabine, tuyau. On multiplie par 2,54. Les tableaux plus bas séparent la diagonale d’un écran et le diamètre nominal d’une jante, qui ne décrivent pas la même longueur.',
+    tip: 'Pour un calcul de tête, multipliez par 2,5 puis ajoutez 2 % : 40 pouces ≈ 100 + 2 = 102 cm (valeur exacte 101,6 cm).',
+    faq: [
+      { q: 'Un pouce fait-il 2,5 cm ou 2,54 cm ?', a: 'Exactement 2,54 cm. Arrondir à 2,5 cm fait perdre 1,6 % : sur une télévision de 65 pouces, l’écart dépasse 2,5 cm.' },
+      { q: 'Comment mesurer un écran en pouces ?', a: 'Mesurez la diagonale de la dalle visible, d’un coin au coin opposé, sans le cadre. Divisez les centimètres par 2,54 pour obtenir des pouces. La page [[/convertir/cm-en-pouce|cm en pouce]] fait ce calcul.' },
+      { q: 'Une TV de 55 pouces fait-elle 140 cm de large ?', a: '55 pouces, soit 139,7 cm, est la diagonale de la dalle. En 16:9, la largeur est d’environ 121,8 cm, cadre exclu. Le détail est sur [[/convertir/55-pouces-en-cm|55 pouces en cm]].' },
+      { q: 'Comment convertir des pouces en millimètres ?', a: '1 pouce = 25,4 mm exactement. Les fractions utilisées en plomberie (1/2″, 3/4″) sont sur [[/convertir/pouce-en-mm|pouce en mm]].' },
+    ],
+    related: ['cm-en-pouce', 'pouce-en-mm', '55-pouces-en-cm', '65-pouces-en-cm', '32-pouces-en-cm', '27-pouces-en-cm', '24-pouces-en-cm', '20-pouces-en-cm'],
+  },
   { slug: 'cm-en-pouce', from: 'cm', to: 'pouce', name: 'Cm en pouce', values: [1, 2, 2.54, 5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 100, 120, 150], uses: 'Convertir des centimètres en pouces sert pour commander un écran, une jante, un objectif ou un vêtement sur un site américain, ou pour lire un tour de taille de jean (W32 = 32 pouces).', tip: 'Divisez par 2,54, ou multipliez par 0,3937. Calcul de tête : divisez par 10, multipliez par 4 : 50 cm ≈ 20 pouces (valeur exacte 19,69).', faq: [{ q: 'Combien de pouces dans 1 mètre ?', a: '100 ÷ 2,54 = 39,37 pouces.' }, { q: 'Quelle taille de jean pour un tour de taille de 81 cm ?', a: '81 ÷ 2,54 ≈ 31,9, soit un W32. Les tailles de jean en W correspondent au tour de taille en pouces.' }] },
   { slug: 'pouce-en-mm', from: 'pouce', to: 'mm', name: 'Pouce en mm', values: [0.125, 0.25, 0.375, 0.5, 0.75, 1, 1.25, 1.5, 2, 3, 4, 6], uses: 'Les pouces en millimètres servent en plomberie (raccords 1/2″, 3/4″), en mécanique (clés et forets américains), pour les jantes et les épaisseurs de planches.', tip: 'Multipliez par 25,4. Une fraction se convertit d’abord en décimal : 3/8″ = 0,375″ = 9,525 mm.', faq: [{ q: 'Un raccord de plomberie 1/2 pouce fait-il 12,7 mm ?', a: 'Pas exactement : la désignation « 1/2″ » des filetages gaz (BSP) est nominale. Le diamètre extérieur réel du filetage est d’environ 20,96 mm. Le calcul 1/2 × 25,4 = 12,7 mm reste juste pour une vraie longueur d’un demi-pouce.' }] },
   { slug: 'mile-en-km', from: 'mile', to: 'km', name: 'Mile en km', values: [1, 2, 3, 5, 10, 13.1, 20, 26.2, 50, 60, 70, 100, 200, 500, 1000], uses: 'On convertit des miles en kilomètres pour un road trip aux États-Unis ou au Royaume-Uni, pour lire une distance de course (semi-marathon de 13,1 miles, marathon de 26,2 miles) ou l’autonomie d’une voiture électrique américaine.', tip: 'Multipliez par 1,6, puis ajoutez un centième : 50 miles ≈ 80 + 0,5 = 80,5 km (exact : 80,47 km). Astuce de Fibonacci : 5 miles ≈ 8 km, 8 miles ≈ 13 km.', faq: [{ q: 'Le mile marin est-il le même que le mile ?', a: 'Non. Le mille marin vaut 1 852 m, contre 1 609,344 m pour le mile terrestre. Ce convertisseur utilise le mile terrestre.' }] },

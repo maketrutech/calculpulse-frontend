@@ -7,7 +7,7 @@ function clean(n) {
   return Number.isFinite(n) ? fmt(n, 6).replace(/\u00a0/g, ' ') : ''
 }
 
-export function Converter({ from, to, initial = 1, reversePath }) {
+export function Converter({ from, to, initial = 1, reversePath, presets = null }) {
   const a = UNITS[from]
   const b = UNITS[to]
   const [left, setLeft] = useState(String(initial).replace('.', ','))
@@ -27,6 +27,18 @@ export function Converter({ from, to, initial = 1, reversePath }) {
     : 'Saisissez un nombre (la virgule est acceptée).'
   return (
     <div className="calc-block">
+      {presets ? (
+        <div className="seg" role="group" aria-label="Valeurs courantes">
+          {presets.map((preset) => {
+            const on = Number.isFinite(lv) && Math.abs(lv - preset.value) < 1e-9
+            return (
+              <button key={preset.label} type="button" className={on ? 'is-on' : undefined} aria-pressed={on} onClick={() => onLeft(String(preset.value).replace('.', ','))}>
+                {preset.label}
+              </button>
+            )
+          })}
+        </div>
+      ) : null}
       <div className="conv">
         <label className="field" htmlFor="cv-l">
           <span>{a.p.charAt(0).toUpperCase() + a.p.slice(1)} ({a.sym})</span>
