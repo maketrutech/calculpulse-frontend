@@ -30,6 +30,69 @@ function siblings(pair) {
 }
 
 
+function pouceRow(label, inches) {
+  return [label, `${fmt(inches, 1)} po`, `${fmt(inches * 2.54, 3)} cm`]
+}
+
+function pouceSections() {
+  const diag = Math.sqrt(16 * 16 + 9 * 9)
+  const w = fmt(((55 * 16) / diag) * 2.54, 1)
+  const h = fmt(((55 * 9) / diag) * 2.54, 1)
+  return [
+    {
+      h2: 'La taille d’un écran en pouces est la diagonale',
+      paragraphs: [
+        `Un écran annoncé « 55 pouces » ne se mesure pas en largeur. La cote est la diagonale de la dalle, d’un coin intérieur au coin opposé, cadre exclu. 55 × 2,54 = 139,7 cm de diagonale. Au format 16:9, la dalle fait environ ${w} cm de large et ${h} cm de haut. Le pied et les bordures s’ajoutent : la fiche du fabricant prime avant d’acheter un meuble.`,
+        'La largeur et la hauteur des tailles les plus demandées sont détaillées sur [[/convertir/20-pouces-en-cm|20 pouces]], [[/convertir/24-pouces-en-cm|24 pouces]], [[/convertir/27-pouces-en-cm|27 pouces]], [[/convertir/32-pouces-en-cm|32 pouces]], [[/convertir/55-pouces-en-cm|55 pouces]] et [[/convertir/65-pouces-en-cm|65 pouces]]. Le sens inverse est sur [[/convertir/cm-en-pouce|cm en pouce]]. Une cote de plomberie ou de foret, en millimètres, est sur [[/convertir/pouce-en-mm|pouce en mm]].',
+      ],
+    },
+    {
+      h2: 'Tableau pouce en cm : écrans',
+      paragraphs: ['Chaque ligne convertit la diagonale annoncée. La largeur est plus courte et dépend du format (16:9, 16:10 ou 21:9).'],
+      table: {
+        caption: 'Diagonales d’écran courantes, en pouces et en centimètres',
+        headers: ['Appareil', 'Pouces', 'Centimètres'],
+        rows: [
+          pouceRow('Smartphone', 6.1),
+          pouceRow('Grand smartphone', 6.7),
+          pouceRow('Ordinateur portable', 13.3),
+          pouceRow('Ordinateur portable', 14),
+          pouceRow('Ordinateur portable', 15.6),
+          pouceRow('Moniteur de bureau', 24),
+          pouceRow('Moniteur', 27),
+          pouceRow('Téléviseur ou grand moniteur', 32),
+          pouceRow('Téléviseur', 43),
+          pouceRow('Téléviseur', 55),
+          pouceRow('Téléviseur', 65),
+          pouceRow('Téléviseur', 75),
+        ],
+      },
+    },
+    {
+      h2: 'Tableau pouce en cm : jantes et roues',
+      paragraphs: [
+        'Ici le pouce est un diamètre nominal. Une jante de 17 pouces mesure 17 × 2,54 = 43,18 cm : c’est le diamètre de la jante, pas celui du pneu monté. Une roue de vélo « 29 pouces » se convertit de la même façon, 29 × 2,54 = 73,66 cm, et désigne le diamètre nominal de la roue.',
+        'Le diamètre extérieur d’un pneu se lit sur le flanc. Pour un 205/55 R16 : jante 16 × 25,4 = 406,4 mm, flanc 55 % de 205 mm = 112,75 mm, diamètre 406,4 + 2 × 112,75 = 631,9 mm, soit 63,19 cm. Le diamètre de jante correspondant est 16 × 2,54 = 40,64 cm.',
+      ],
+      table: {
+        caption: 'Diamètres nominaux de jantes et de roues',
+        headers: ['Usage', 'Pouces', 'Centimètres'],
+        rows: [
+          pouceRow('Jante de voiture', 15),
+          pouceRow('Jante de voiture', 16),
+          pouceRow('Jante de voiture', 17),
+          pouceRow('Jante de voiture', 18),
+          pouceRow('Jante de voiture', 19),
+          pouceRow('Roue de vélo enfant', 20),
+          pouceRow('Roue de vélo', 26),
+          pouceRow('Roue de vélo', 27.5),
+          pouceRow('Roue de vélo (29er)', 29),
+        ],
+      },
+    },
+  ]
+}
+
 function workedExample(pair) {
   const a = UNITS[pair.from]
   const b = UNITS[pair.to]
@@ -60,28 +123,30 @@ export function pairPage(slug) {
   const one = convert(1, pair.from, pair.to)
   const kw = pair.name.toLowerCase()
   const values = valuePages.filter((v) => v.pair === slug)
+  const sections = [
+    { h2: `Combien vaut 1 ${a.s} en ${b.p} ?`, paragraphs: [pair.from === 'fahrenheit' || pair.from === 'celsius' ? `1 ${a.s} correspond à ${fmt(one, 4)} ${b.sym}. Les échelles de température n’ont pas le même zéro : on ne convertit donc pas avec un simple coefficient, mais avec la formule ${formulaText(pair)}.` : `1 ${a.s} vaut ${fmt(one, 6)} ${unitName(b, one)}. Pour convertir, on applique la formule ${formulaText(pair)}.`, a.def, b.def] },
+    { h2: 'À quoi sert cette conversion ?', paragraphs: [pair.uses] },
+    ...(pair.slug === 'pouce-en-cm' ? pouceSections() : []),
+    { h2: 'Astuce de calcul mental', paragraphs: [pair.tip] },
+    ...workedExample(pair),
+    { h2: `Tableau de conversion ${kw}`, table: { caption: `${cap(a.p)} en ${b.p}`, headers: [cap(a.p), cap(b.p)], rows: rows(pair, pair.values) } },
+    ...(values.length ? [{ h2: 'Valeurs détaillées', list: values.map((v) => `[[${convPath(v.slug)}|${fmt(v.value)} ${unitName(a, v.value)} en ${b.sym}]]`) }] : []),
+  ]
   return {
     path: convPath(slug),
     kind: 'pair',
-    title: `Convertir ${kw} : convertisseur ${a.sym} → ${b.sym} et tableau`,
-    description: `Convertissez des ${a.p} en ${b.p} (${a.sym} en ${b.sym}) instantanément. Formule exacte, tableau des valeurs courantes, astuce de calcul mental et exemples.`,
-    h1: `Convertir ${kw}`,
-    lede: `Tapez une valeur dans l’un des deux champs : la conversion entre ${a.p} et ${b.p} se fait dans les deux sens, avec la virgule décimale.`,
-    converter: { from: pair.from, to: pair.to, initial: 1, reversePath: rev ? convPath(rev.slug) : null },
+    title: pair.title || `Convertir ${kw} : convertisseur ${a.sym} → ${b.sym} et tableau`,
+    description: pair.description || `Convertissez des ${a.p} en ${b.p} (${a.sym} en ${b.sym}) instantanément. Formule exacte, tableau des valeurs courantes, astuce de calcul mental et exemples.`,
+    h1: pair.h1 || `Convertir ${kw}`,
+    lede: pair.lede || `Tapez une valeur dans l’un des deux champs : la conversion entre ${a.p} et ${b.p} se fait dans les deux sens, avec la virgule décimale.`,
+    converter: { from: pair.from, to: pair.to, initial: pair.initial ?? 1, reversePath: rev ? convPath(rev.slug) : null, presets: pair.presets },
     crumbName: pair.name,
-    sections: [
-      { h2: `Combien vaut 1 ${a.s} en ${b.p} ?`, paragraphs: [pair.from === 'fahrenheit' || pair.from === 'celsius' ? `1 ${a.s} correspond à ${fmt(one, 4)} ${b.sym}. Les échelles de température n’ont pas le même zéro : on ne convertit donc pas avec un simple coefficient, mais avec la formule ${formulaText(pair)}.` : `1 ${a.s} vaut ${fmt(one, 6)} ${unitName(b, one)}. Pour convertir, on applique la formule ${formulaText(pair)}.`, a.def, b.def] },
-      { h2: 'À quoi sert cette conversion ?', paragraphs: [pair.uses] },
-      { h2: 'Astuce de calcul mental', paragraphs: [pair.tip] },
-      ...workedExample(pair),
-      { h2: `Tableau de conversion ${kw}`, table: { caption: `${cap(a.p)} en ${b.p}`, headers: [cap(a.p), cap(b.p)], rows: rows(pair, pair.values) } },
-      ...(values.length ? [{ h2: 'Valeurs détaillées', list: values.map((v) => `[[${convPath(v.slug)}|${fmt(v.value)} ${unitName(a, v.value)} en ${b.sym}]]`) }] : []),
-    ],
+    sections,
     faqs: [
       ...pair.faq,
       { q: `Comment convertir des ${b.p} en ${a.p} ?`, a: rev ? `Utilisez le convertisseur inverse : [[${convPath(rev.slug)}|${rev.name.toLowerCase()}]], ou tapez directement la valeur dans le second champ ci-dessus.` : `Tapez la valeur dans le second champ du convertisseur : le calcul se fait dans les deux sens.` },
     ],
-    related: [...(rev ? [rev.slug] : []), ...siblings(pair).filter((s) => s !== rev?.slug)].slice(0, 4),
+    related: pair.related || [...(rev ? [rev.slug] : []), ...siblings(pair).filter((s) => s !== rev?.slug)].slice(0, 4),
   }
 }
 

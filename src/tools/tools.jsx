@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import * as c from '../lib/calc.js'
-import { fmt, money, parseNum, pct } from '../lib/num.js'
+import { fmt, money, parseNum, pct, roundTo } from '../lib/num.js'
 import { decimalToWords, euroToWords } from '../lib/words.fr.js'
 import { Block, NumField, Result, Seg, Select, ok, useNum } from './ui.jsx'
 
@@ -35,24 +36,25 @@ export function Pourcentage() {
 
 export function Augmentation() {
   const [mode, setMode] = useState('hausse')
-  const x = useNum(1500)
+  const x = useNum(2400)
   const p = useNum(5)
   const sign = mode === 'hausse' ? 1 : -1
   const final = ok(x.value, p.value) ? c.applyRate(x.value, sign * p.value) : NaN
-  const from = useNum(1800)
-  const to = useNum(1950)
+  const from = useNum(2400)
+  const to = useNum(2520)
   const ev = ok(from.value, to.value) ? c.evolutionRate(from.value, to.value) : NaN
+  const coef = ok(p.value) ? fmt(c.coefficient(sign * p.value), 4) : '…'
   return (
     <div className="calc-stack">
-      <Block title="Appliquer un pourcentage">
+      <Block title="Nouvelle valeur après +x %">
         <Seg label="Sens" value={mode} onChange={setMode} options={[{ value: 'hausse', label: 'Augmenter' }, { value: 'baisse', label: 'Diminuer' }]} />
         <div className="calc-row">
           <NumField label="Valeur de départ" state={x} />
           <NumField label={mode === 'hausse' ? 'Augmentation' : 'Baisse'} state={p} suffix="%" />
         </div>
-        <Result label="Valeur finale" value={fmt(final, 2)} detail={ok(final) ? `Écart : ${sign > 0 ? '+' : '−'}${fmt(Math.abs(final - x.value), 2)} · coefficient ${fmt(c.coefficient(sign * p.value), 4)}` : 'Saisissez deux nombres.'} />
+        <Result label="Valeur finale" value={fmt(final, 2)} detail={ok(final) ? `${x.raw} × ${coef} = ${fmt(final, 2)} · écart ${sign > 0 ? '+' : '−'}${fmt(Math.abs(final - x.value), 2)}` : 'Saisissez deux nombres.'} />
       </Block>
-      <Block title="Pourcentage d’augmentation entre deux valeurs">
+      <Block title="Quel % d’augmentation entre deux valeurs ?">
         <div className="calc-row">
           <NumField label="Ancienne valeur" state={from} />
           <NumField label="Nouvelle valeur" state={to} />
@@ -102,12 +104,88 @@ const RATES = [
   { value: 'autre', label: 'Autre taux' },
 ]
 
-export function Tva({ rate: fixed = '20' }) {
+function centsInput(n) {
+  return roundTo(n, 2).toFixed(2).replace('.', ',')
+}
+
+export function Tva({ rate: fixed = '20', both = false }) {
   const [from, setFrom] = useState('ht')
   const amount = useNum(100)
   const [rate, setRate] = useState(fixed)
   const custom = useNum(fixed)
+  const startRate = Number(fixed)
+  const ht = useNum(100)
+  const ttc = useNum(both && Number.isFinite(startRate) ? centsInput(100 * (1 + startRate / 100)) : '')
+  const [source, setSource] = useState('ht')
   const r = rate === 'autre' ? custom.value : Number(rate)
+  const rateOk = Number.isFinite(r) && r > -100
+
+  useEffect(() => {
+    if (!both) return
+    if (source === 'ht') {
+      ttc.setRaw(ok(ht.value) && rateOk ? centsInput(ht.value * (1 + r / 100)) : '')
+    } else {
+      ht.setRaw(ok(ttc.value) && rateOk ? centsInput(ttc.value / (1 + r / 100)) : '')
+    }
+    // Recalcule le champ qui n’est pas la source quand le taux change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [both, rate, custom.raw])
+
+  if (both) {
+    const htInput = {
+      raw: ht.raw,
+      value: ht.value,
+      setRaw: (v) => {
+        setSource('ht')
+        ht.setRaw(v)
+        const n = parseNum(v)
+        ttc.setRaw(ok(n) && rateOk ? centsInput(n * (1 + r / 100)) : '')
+      },
+    }
+    const ttcInput = {
+      raw: ttc.raw,
+      value: ttc.value,
+      setRaw: (v) => {
+        setSource('ttc')
+        ttc.setRaw(v)
+        const n = parseNum(v)
+        ht.setRaw(ok(n) && rateOk ? centsInput(n / (1 + r / 100)) : '')
+      },
+    }
+    const res = source === 'ttc'
+      ? (ok(ttc.value) && rateOk ? c.tva(ttc.value, r, 'ttc') : null)
+      : (ok(ht.value) && rateOk ? c.tva(ht.value, r, 'ht') : null)
+    const coef = rateOk ? fmt(1 + r / 100, 4) : '…'
+    return (
+      <div className="calc-stack">
+        <Block>
+          <p className="formula">HT → TTC et TTC → HT : modifiez l’un des deux montants, l’autre suit.</p>
+          <div className="calc-row">
+            <NumField label="Montant hors taxes (HT)" state={htInput} suffix="€" />
+            <NumField label="Montant toutes taxes comprises (TTC)" state={ttcInput} suffix="€" />
+            <Select label="Taux de TVA" value={rate} onChange={setRate} options={RATES} />
+          </div>
+          {rate === 'autre' ? <div className="calc-row"><NumField label="Taux personnalisé" state={custom} suffix="%" /></div> : null}
+          <div className="result-grid">
+            <Result label="Montant HT" value={money(res?.ht)} big={source === 'ttc'} />
+            <Result label={`TVA ${rateOk ? fmt(r) : ''} %`} value={money(res?.tva)} big={false} />
+            <Result label="Montant TTC" value={money(res?.ttc)} big={source === 'ht'} />
+          </div>
+          <p className="formula">{source === 'ttc' ? `HT = TTC ÷ (1 + taux) = ${ttc.raw || '…'} ÷ ${coef}` : `TTC = HT × (1 + taux) = ${ht.raw || '…'} × ${coef}`}</p>
+          <p className="formula">
+            Taux détaillés :
+            {' '}
+            <Link to="/calcul-tva-20">TVA 20 %</Link>
+            {' · '}
+            <Link to="/calcul-tva-10">TVA 10 %</Link>
+            {' · '}
+            <Link to="/calcul-tva-5-5">TVA 5,5 %</Link>
+          </p>
+        </Block>
+      </div>
+    )
+  }
+
   const res = ok(amount.value, r) ? c.tva(amount.value, r, from) : null
   return (
     <div className="calc-stack">
